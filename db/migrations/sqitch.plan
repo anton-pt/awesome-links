@@ -1,0 +1,8 @@
+%syntax-version=1.0.0
+%project=awesome-links
+%uri=https://github.com/anton-pt/awesome-links
+
+appschema 2024-07-28T08:47:20Z Anton Tcholakov <apt.misc@pm.me> # Add schema for all awesome-links objects.
+users [appschema] 2024-07-28T09:21:50Z Anton Tcholakov <apt.misc@pm.me> # Create table to track users.
+links [appschema] 2024-07-28T09:58:39Z Anton Tcholakov <apt.misc@pm.me> # Create table to track links.
+user_links [users links] 2024-07-28T10:09:40Z Anton Tcholakov <apt.misc@pm.me> # Create table to track user links.

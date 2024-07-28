@@ -13,22 +13,22 @@ type Role = "USER" | "ADMIN";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ nullable: true, unique: true, length: 255 })
   email?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "text" })
   image?: string;
 
   @Column({ type: "enum", enum: ["USER", "ADMIN"], default: "USER" })
   role!: Role;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamp with time zone" })
   createdDate!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamp with time zone" })
   updatedDate!: Date;
 
   @ManyToMany(() => Link, (link) => link.users)

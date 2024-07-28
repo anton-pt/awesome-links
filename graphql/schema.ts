@@ -38,7 +38,7 @@ UserRef.implement({
 const LinkRef = builder.objectRef<Link>("Link");
 
 builder.node(LinkRef, {
-  id: { resolve: (link) => link.id, parse: (id) => parseInt(id) },
+  id: { resolve: (link) => link.id },
   loadOne: async (id) => {
     const db = await connectToDB();
     return await db.linkRepository.findById(id);
@@ -61,7 +61,7 @@ builder.queryType({
       },
       resolve: async (_, { id }) => {
         const db = await connectToDB();
-        return await db.linkRepository.findById(parseInt(id));
+        return await db.linkRepository.findById(id);
       },
     }),
     links: t.connection(
@@ -71,10 +71,9 @@ builder.queryType({
           resolveCursorConnection(
             {
               args,
-              toCursor: (link) => link.id.toString(),
+              toCursor: (link) =>
+                `${link.createdDate.getTime().toString()}@${link.id}`,
             },
-            // Manually defining the arg type here is required
-            // so that typescript can correctly infer the return value
             async ({
               before,
               after,
@@ -82,9 +81,21 @@ builder.queryType({
               inverted,
             }: ResolveCursorConnectionArgs) => {
               const db = await connectToDB();
+
+              const beforeDateId: [Date, string] | undefined = before
+                ? [
+                    new Date(parseInt(before.split("@")[0])),
+                    before.split("@")[1],
+                  ]
+                : undefined;
+
+              const afterDateId: [Date, string] | undefined = after
+                ? [new Date(parseInt(after.split("@")[0])), after.split("@")[1]]
+                : undefined;
+
               return await db.linkRepository.findPaginated(
-                before,
-                after,
+                beforeDateId,
+                afterDateId,
                 limit,
                 inverted
               );
@@ -102,7 +113,7 @@ builder.queryType({
       },
       resolve: async (_, { id }) => {
         const db = await connectToDB();
-        return await db.userRepository.findById(parseInt(id));
+        return await db.userRepository.findById(id);
       },
     }),
     users: t.field({
@@ -163,10 +174,8 @@ builder.mutationType({
       },
       resolve: async (_, { userId, linkId }) => {
         const db = await connectToDB();
-        const user = await db.userRepository.findById(parseInt(userId), [
-          "links",
-        ]);
-        const link = await db.linkRepository.findById(parseInt(linkId));
+        const user = await db.userRepository.findById(userId, ["links"]);
+        const link = await db.linkRepository.findById(linkId);
         if (!user || !link) {
           throw new Error("User or link not found");
         }

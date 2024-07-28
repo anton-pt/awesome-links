@@ -14,6 +14,7 @@ import {
 const appDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
+  schema: "awesomelinks",
   entities: [Link, User],
   logging: true,
   logger: "advanced-console",

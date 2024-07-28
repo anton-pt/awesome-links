@@ -3,37 +3,46 @@ import { Link } from "../entities/link.entity";
 
 export const makeLinkRepository = async (dataSource: DataSource) =>
   dataSource.getRepository(Link).extend({
-    async findById(id: number, relations?: "users"[]) {
+    async findById(id: string, relations?: "users"[]) {
       return this.findOne({ where: { id }, relations: relations });
     },
 
     async findPaginated(
-      before: string | undefined,
-      after: string | undefined,
+      before: [Date, string] | undefined,
+      after: [Date, string] | undefined,
       limit: number,
       inverted: boolean,
       relations?: "users"[]
     ) {
-      let whereId: FindOperator<number> | undefined;
-
-      if (before && after) {
-        whereId = And(LessThan(parseInt(before)), MoreThan(parseInt(after)));
-      } else if (before) {
-        whereId = LessThan(parseInt(before));
-      } else if (after) {
-        whereId = MoreThan(parseInt(after));
-      } else {
-        whereId = undefined;
+      const query = this.createQueryBuilder("link");
+      if (before) {
+        query
+          .andWhere("link.createdDate < :before", { before: before[0] })
+          .orWhere("link.createdDate = :before AND link.id < :beforeId", {
+            before: before[0],
+            beforeId: before[1],
+          });
       }
 
-      return await this.find({
-        where: {
-          id: whereId,
-        },
-        order: { id: inverted ? "DESC" : "ASC" },
-        take: limit,
-        relations: relations,
-      });
+      if (after) {
+        query
+          .andWhere("link.createdDate > :after", { after: after[0] })
+          .orWhere("link.createdDate = :after AND link.id > :afterId", {
+            after: after[0],
+            afterId: after[1],
+          });
+      }
+
+      query
+        .orderBy("link.createdDate", inverted ? "DESC" : "ASC")
+        .addOrderBy("link.id", inverted ? "DESC" : "ASC")
+        .take(limit);
+
+      if (relations?.includes("users")) {
+        query.leftJoinAndSelect("link.users", "users");
+      }
+
+      return query.getMany();
     },
   });
 

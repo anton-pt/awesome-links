@@ -1,26 +1,43 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { User } from "./user.entity";
 
 @Entity()
 export class Link {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  @Column()
+  @Column({ type: "text" })
   title!: string;
 
-  @Column()
+  @Column({ type: "text" })
   description!: string;
 
-  @Column()
+  @Column({ type: "text" })
   url!: string;
 
-  @Column()
+  @Column({ type: "text" })
   imageUrl!: string;
 
-  @Column()
+  @Column({ type: "text" })
   category!: string;
 
-  @ManyToMany(() => User, (user) => user.links)
+  @CreateDateColumn({ type: "timestamp with time zone" })
+  createdDate!: Date;
+
+  @UpdateDateColumn({ type: "timestamp with time zone" })
+  updatedDate!: Date;
+
+  @ManyToMany(() => User, (user) => user.links, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
   users!: Promise<User[]>;
 }
