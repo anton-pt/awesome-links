@@ -1,0 +1,35 @@
+{
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.indentSize": 2
+    },
+    "[javascript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[graphql]": {
+        "editor.formatOnSave": true
+    },
+    "[prisma]": {
+        "editor.formatOnSave": true
+    },
+    "eslint.validate": [
+        "typescript",
+        "javascript"
+    ],
+    "eslint.workingDirectories": [
+        "./packages/article-db",
+        "./packages/article-service",
+        "./packages/mock-data-cli"
+    ],
+    "plantuml.exportFormat": "svg",
+    "plantuml.render": "PlantUMLServer",
+    "plantuml.server": "http://localhost:9099",
+    "plantuml.diagramsRoot": "architecture_diagrams/src",
+    "plantuml.exportOutDir": "architecture_diagrams/out"
+}
